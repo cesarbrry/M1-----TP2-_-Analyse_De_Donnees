@@ -2,29 +2,74 @@
 title: "TP2_Berry"
 author: '[CESAR BERRY ]'
 date: "2023-11-01"
-output: html_document
+output: 
+  html_document:
+    theme: journal
 ---
-
+# EXERCICE 1
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+options(scipen = 999)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r}
+dat=read.csv("spotify_songs.csv")
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+#summary(dat)
+# La fonction summary nou permet de faire un résumé de toute les données que l'on a 
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+##2.2 Variables quantitatives ou catégorielles
+### Cracteristiques de position
+
+```{r}
+VarQuant <- dat[sapply(dat, is.numeric)]
+```
+
+On ne veux que les valeurs quantitatives que l'ont range dans une nouvelle variable que l'on appelle VarQuant
+
+```{r}
+apply(VarQuant,2,mean)
+apply(VarQuant,1,mean)
+```
+
+On cherche a obtenir la moyenne a partir de notre nouveau tableau de données au niveau des lignes et des colonnes.
+
+```{r}
+apply(VarQuant,2,function(x)quantile(x,0.1))
+apply(VarQuant,2,function(x)quantile(x,0.9))
+apply(VarQuant,2,function(x)quantile(x,probs=seq(0,1,by=0.3)))
+```
+
+On a ci dessus differentes maniere d'appliquer la fonction apply, afin d'obtenir :
+
+ *    le premier decile : On demande uniquement le quantile correpondant aux premiers 10% des données (0,1)
+ *    le dernier decile : On demande uniquement le quantile correspondant aux derniers 10% des données (0,9)
+ *    le premier, troisieme, sixieme et dernier decile : On demande les quantiles allant de 0 à 100%, avec un pas de 30%, ce qui donne 10%, 30%,60%,90%
+ 
+### Cracteristiques de dispersion
+
+```{r}
+apply(VarQuant,2,sd)
+apply(VarQuant,2,sd)/apply(VarQuant,2,mean)
+```
+
+Les deux fonctions ci dessus nous permettent de calculer deux choses :
+*   La premiere nous permet de calculer l'ecart type de chaque colonne de notre varaible VarQuant
+*   La deuxieme nous permet de diviser l'ecart type de chaque colonne par la moyenne de cette meme colonne, ce qui nous donne un ratio entrel'ecrat type et la moyenne a chaque colonne, on normalise donc par la moyenne.
+
+```{r}
+Q1 <- apply(VarQuant, 2, quantile, probs = 0.25)
+Q3 <- apply(VarQuant, 2, quantile, probs = 0.75)
+IntervalleQ1Q3 <- Q3-Q1
+print(data.frame(Q1, Q3, Intervalle = IntervalleQ1Q3))
+```
+
+On assigne a deux varibales Q1 et Q3 les valeurs aux quantiles 0.25 (25%) et 0.75 (75%), on calcule ensuite l'intervalle en effectuant une soustraction entre Q3 et Q1.
+
+
+
+
+
